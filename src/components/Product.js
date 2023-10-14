@@ -1,8 +1,8 @@
-import React, { useEffect,useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 
 const Product = () => {
-  const [details,setDetails] = useState({})
+  const [details, setDetails] = useState({})
   const location = useLocation();
   useEffect(() => {
     setDetails(location.state.item);
@@ -18,9 +18,12 @@ const Product = () => {
             alt="productImg"
           />
           <div className="absolute top-4 right-0">
-          {details.isNew&& <p className="bg-black text-white font-semibold font-titleFont px-6 py-1">Sale</p>}
+            {details.isNew && <p className="bg-black text-white font-semibold font-titleFont px-6 py-1">Sale</p>}
+          </div>
         </div>
-        </div>
+      </div>
+      <div>
+        <h1>hello git</h1>
       </div>
     </div>
   )
