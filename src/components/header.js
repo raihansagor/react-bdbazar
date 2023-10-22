@@ -30,8 +30,10 @@ const Header = () => {
               <span className=' absolute top-2 left-0 justify-center w-6 flex items-center'>{productData.length}</span>
             </div>
           </Link>
+          <Link to="/login">
           <img className='w-10 h-10 rounded'
             src={userLogo} alt='userlogo' />
+          </Link>
         </div>
       </div>
 
