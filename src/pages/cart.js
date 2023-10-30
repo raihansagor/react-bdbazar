@@ -4,9 +4,14 @@ import { useSelector } from "react-redux";
 import { useEffect, useState } from "react";
 import { HiOutlineArrowLeft } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import StripeCheckout from "react-stripe-checkout";
+import axios from "axios";
 
 const Cart = () => {
   const productData = useSelector((state) => state.bazar.productData);
+  const userInfo = useSelector((state) => state.bazar.userInfo);
+  const [payNow, setPayNow] = useState(false);
   const [totalAmt, setTotalAmt] = useState("");
   useEffect(() => {
     let price = 0;
@@ -16,6 +21,19 @@ const Cart = () => {
     });
     setTotalAmt(price.toFixed(2));
   }, [productData]);
+  const handleCheckout = () => {
+    if (userInfo) {
+      setPayNow(true);
+    } else {
+      toast.error("Please sign in to Checkout");
+    }
+  };
+  const payment = async (token) => {
+    await axios.post("http://localhost:8000/pay", {
+      amount: totalAmt * 100,
+      token: token,
+    });
+  };
   return (
     <div>
       <img
@@ -47,11 +65,24 @@ const Cart = () => {
             </span>
           </p>
           <button
-
+            onClick={handleCheckout}
             className="text-base bg-black text-white w-full py-3 mt-6 hover:bg-gray-800 duration-300"
           >
             proceed to checkout
           </button>
+          {payNow && (
+              <div className="w-full mt-6 flex items-center justify-center">
+                <StripeCheckout
+                  stripeKey="pk_test_51O6vxkFr7C8s500W0JhjaCvvdgh56AOFGXIH1yYfUUsXeprDlphZEY6UTE4e9RsWx8Id4VSKAgrpncYstI6SbJAl00C0nbkroM"
+                  name="Bazar Online Shopping"
+                  amount={totalAmt * 100}
+                  label="Pay to bazar"
+                  description={`Your Payment amount is $${totalAmt}`}
+                  token={payment}
+                  email={userInfo.email}
+                />
+              </div>
+            )}
         </div>
       </div>
       <div className="max-w-screen-xl mx-auto py-10 flex flex-col items-center gap-2 justify-center">
@@ -68,6 +99,18 @@ const Cart = () => {
             </button>
           </Link>
         </div>
+        <ToastContainer
+        position="top-left"
+        autoClose={2000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     </div>
   )
 }

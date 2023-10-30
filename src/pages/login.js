@@ -2,16 +2,33 @@ import React from 'react'
 import { githubLogo, googleLogo } from "../assets";
 import { getAuth, signInWithPopup, GoogleAuthProvider,signOut } from "firebase/auth";
 import { ToastContainer, toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { addUser,removeUser } from "../redux/bazarSlice";
 
 const Login = () => {
-    const auth = getAuth();
+  const navigate = useNavigate("");
+  const dispatch = useDispatch();
+
+  const auth = getAuth();
   const provider = new GoogleAuthProvider();
   const handleGoogleLogin =(e)=>{
     e.preventDefault();
     signInWithPopup(auth,provider).then((result) => {
         const user = result.user;
-        console.log(user)
-    }).catch((error) => {
+        dispatch(
+          addUser({
+            _id: user.uid,
+            name: user.displayName,
+            email: user.email,
+            image: user.photoURL,
+          })
+        );
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
+    })
+    .catch((error) => {
         console.log(error)
     })
 
@@ -21,6 +38,7 @@ const Login = () => {
       .then(() => {
         // Sign-out successful.
         toast.success("Log Out Successfully!");
+        dispatch(removeUser());
         
       })
       .catch((error) => {
